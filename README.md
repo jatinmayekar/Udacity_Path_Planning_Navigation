@@ -86,8 +86,9 @@
 * How the algo break ties depends on implementation
 * Uniformed search algo 
 * Not efficient
-* Complete - Optimal(coz it expands the shallowest unexplored node with every step)
+* Complete - Optimal(coz it expands the shallowest(not deep) unexplored node with every step)
 * Limited to graphs where all the steps costs are equal
+* Frontier - Queue - First come first out
 
 ![BFS_tree](https://github.com/gonfreces/Udacity_Path_Planning_Navigation/blob/master/BFS_tree.png)
  
@@ -98,7 +99,37 @@
  * Niether complete or optimal or efficient
  * DFS is not complete, because in an infinitely deep space, the algorithm would end up continuing to explore one branch indefinitely
  * DFS is not optimal, because it may find a longer path down one branch before it is able to see a shorter path on another branch
+ * Frontier - Stack - Last in first out
 
 ![DFS_tree](https://github.com/gonfreces/Udacity_Path_Planning_Navigation/blob/master/DFS_tree.png)
 
+### Uniform Cost Search
+
+* Builds upon BFS to be able to search graph with differing edge costs
+* Optimal - expands nodes in order of increasing path cost
+* In certain environments, you can assign cost to every edge - cost may represent turn arounf corner or time delay
+* Uniform cost search explores nodes on the frontier(place where nodes which are visible(neigbouring nodes) but not explored are placed) starting with the node having the lowest cost path
+* Path cost - refers to the sum of all the edge cost leading from the start to that node
+* Frontier - Priority Queue - Organized by path cost
+* Uniform Cost Search is complete if every step cost is greater than some value, ϵ (otherwise, it can get stuck in infinite loops)
+* No uninformed search algorithm can be particularly efficient. They always search in all directions, as they have no information to lead them in the direction of their goal
+
+### A* Search 
+
+* Informed search - takes into acoount information about the goal's location as it goes about its search - uses a heuristic function
+* Heuristic function - *h(n)* - estimate of the distance of the node from the goal - as the only way to know the true distance is to traverse the path - helps steer the search in goal's direction - nodes cloes to the goal have lower heuristic value - goal = *h(n) = 0*
+* No uninformed search algorithm can be particularly efficient. They always search in all directions, as they have no information to lead them in the direction of their goal
+* Path cost - *g(n)* 
+* A* chooses the path to minimize the sum of path cost and heuristic function - *f(n) = Summation of g(n)'s upto the explored node + Value of h(n) assigned to the explored node* - therefore searches for the shortest path in the direction of the goal
+* Algo selects the node to explore (order it) based on the f(n) - Path with lowest *f(n)* will be explored first
+* Frontier - Priority Queue 
+* A* search - less steps to complete than Uniform cost search - coz of *h(n)*
+* Conditions for optimality:
+   * Every edge must have a cost value greater than the some value \epsilon, otherwise the search can get struck in infinite loops and the search would not be complete
+   * The heuristic function must be consistent. This means that it must obey the triangle inqeuality theorem. 
+   * Heuristic function must be admissible - means that h(n) must always be less than or equal to the true cost of reaching the goal from every node. In other words, h(n) must never overestimate the true path cost.??????
+   * As you saw in the image above, admissibility is a requirement for A* to be optimal. For this reason, common heuristics include the Euclidean distance from a node to the goal (as you saw in the video), or in some applications the Manhattan distance. When comparing two different types of values - for instance, if the path cost is measured in hours, but the heuristic function is estimating distance - then you would need to determine a scaling parameter to be able to sum the two in a useful manner.
+   * While A* is a much more efficient search in most situations, there will be environments where it will not outperform other search algorithms. This happens if the path to the goal happens to go in the opposite direction first.
+   * Variants of A* search exist - some accommodate the use of A* search in dynamic environments, while others help A* become more manageable in large environments
+   * [Path Finding Visualization](https://qiao.github.io/PathFinding.js/visual/)
 
