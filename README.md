@@ -43,4 +43,62 @@
     
 ## Discrete Path Planning
 
-* Ba
+* Develop a convenient continuous representation - can be done by representing the problem space as the configuration space
+* Configuration space - known as C space - alternate way of representing the problem space - takes into account geometry of the robot and makes it easier to apply discrete search algorithms
+* Discretization -  The C space must be discretized so that it can be easily be used into algo - represented by a graph
+* Graph - Search algo can be applied to the graph to find the best path from the start node to the goal node
+
+### Continuous Representation
+
+* Robot represented as a point - path planning relatively easy - but impractical as robot has non-zero dimensions
+* Simple way - create a circle with the most outer edge as a radius to represent the robot - check the distance of this circle with the obstacles along the planned paths - select the one that has enough space - but lot of work
+* Best way - expand the obstacle by the radius of the robot and then treat robot as a point
+* This is called configuration space - C space - set of all robot poses
+* Divided into
+    - C<sub>free</sub> - set of robot poses in free space that do not collide with any obstacles
+    - C<sub>obs</sub> - set of robot poses in free space that are in collision with obstacles or walls 
+
+### Minkowski Sum
+
+* Mathematical property - used to compute the config space given an obstacle geometry and robot geometry
+* Intuition behind how the Minkowski sum is calculated - Imagine to paint the outside of an obstacle using a paintbrush that is shaped like your robot, with the robot’s origin as the tip of the paintbrush - The painted area is C<sub>obs</sub>
+* For convex polygons, computing the convolution is trivial and can be done in linear time - however for non-convex polygons (i.e. ones with gaps or holes present), the computation is much more expensive - concave polygon - draw a segement between any two points that has a part of it lying outside the polygon - if covered by a convex polygon - done using quickhull algo -this can cause "ghost" collision - there is a gap but still shows collision 
+
+
+## Graph Search
+
+### Overview
+- Uniformed algo - Searches blindly - no knowledge of the space its traversing or where the goal is maybe 
+- Informed algo - 
+
+### Terms
+- Time complexity - How long it takes an algo to generate the path, usually with respect to the no of nodes or dimensions present - can also refer to the trade-off between quality of an algo vs its computation time
+- Space complexity - Assess how much memory is required to execute the search
+- Generality - Consider the type of problems that the algo can solve 
+
+### Breadth-First Search
+
+* Simplest type 
+* BFS for short
+* Searches the space broadly before it searches deeply
+* In a tree, it searches horzontally(left to right) rather than going deep into a particular branch
+* Traverses one level at a time
+* How the algo break ties depends on implementation
+* Uniformed search algo 
+* Not efficient
+* Complete - Optimal(coz it expands the shallowest unexplored node with every step)
+* Limited to graphs where all the steps costs are equal
+
+![BFS_tree](https://github.com/gonfreces/Udacity_Path_Planning_Navigation/blob/master/BFS_tree.png)
+ 
+ ### Depth-First Search
+ 
+ * Searches deep before it searches broadly
+ * Goes from parent to child - when at the end - goes back to search the child of most recent parent 
+ * Niether complete or optimal or efficient
+ * DFS is not complete, because in an infinitely deep space, the algorithm would end up continuing to explore one branch indefinitely
+ * DFS is not optimal, because it may find a longer path down one branch before it is able to see a shorter path on another branch
+
+![DFS_tree](https://github.com/gonfreces/Udacity_Path_Planning_Navigation/blob/master/DFS_tree.png)
+
+
