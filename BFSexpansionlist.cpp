@@ -2,8 +2,10 @@
 #include <string.h>
 #include <vector>
 #include <algorithm>
+#include <chrono>
 
 using namespace std;
+using namespace std::chrono;
 
 // Map class
 class Map {
@@ -85,7 +87,7 @@ void search(Map map, Planner planner)
     while(g == 0)
     {
         // Print the picked cell's triplet value
-        cout<< open[k][0] << " " << open[k][1] << " " << open[k][2] << endl;
+        // cout<< open[k][0] << " " << open[k][1] << " " << open[k][2] << endl;
         
         // Check the adjacent cells - visible cells - up, left, down, right
         for (int i = 0; i < planner.movements.size(); i++)
@@ -159,11 +161,15 @@ void search(Map map, Planner planner)
             }
         }
     } 
-    cout<< "No. of steps = " << n << endl;
+    cout << "No. of steps = " << n << endl;
+    // cout << "Size of open vector = " << open.size() << endl;
 }
 
 int main()
 {
+    // Get starting timepoint 
+    auto start = high_resolution_clock::now();
+    
     // Instantiate map and planner objects
     Map map;
     Planner planner;
@@ -171,6 +177,17 @@ int main()
     // Search for the expansions
     search(map, planner);
     
+    // Get ending timepoint 
+    auto stop = high_resolution_clock::now(); 
+  
+    // Get duration. Substart timepoints to  
+    // get durarion. To cast it to proper unit 
+    // use duration cast method 
+    auto duration = duration_cast<microseconds>(stop - start); 
+  
+    cout << "Time taken by function: "
+         << duration.count() << " microseconds" << endl; 
+         
     return 0;
 }
 
@@ -196,6 +213,7 @@ Output:
 11 4 5
 No. of steps = 17 
 */
+/* Time taken = 111 sec compared to the ans provided by Udacity, 347 sec */
 
 /* If grid changed to this:
         { 0, 1, 0, 0, 0, 0 },
