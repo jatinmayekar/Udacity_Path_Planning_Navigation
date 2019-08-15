@@ -48,12 +48,12 @@ void print2DVector(T Vec)
     }
 }
 
-/*#### TODO: Code the search function which will generate the expansion list ####*/
-// You are only required to print the final triplet values
+/* Code the search function which will generate the expansion list */
+
 void search(Map map, Planner planner)
 {
     //  Define the open vector
-    vector<vector<int> > open(500, vector<int>(3));
+    vector<vector<int> > open;
     
     // Set the starting point
     open.push_back({0, planner.start[0], planner.start[1]}); 
@@ -84,16 +84,18 @@ void search(Map map, Planner planner)
     //  Search the map
     while(g == 0)
     {
+        // Print the picked cell's triplet value
         cout<< open[k][0] << " " << open[k][1] << " " << open[k][2] << endl;
+        
         // Check the adjacent cells - visible cells - up, left, down, right
         for (int i = 0; i < planner.movements.size(); i++)
         {
             // Define the visible cells
             x = open[k][1] + planner.movements[i][0];
             y = open[k][2] + planner.movements[i][1];
-            cout<< x << " "<< y << endl;
+            
             // Check if the cell is inside the grid - boundary conditions
-            if ( (x >= 0) || (y >= 0) || (x < map.mapHeight) || (y < map.mapWidth) )
+            if ( (x >= 0) && (y >= 0) && (x < map.mapHeight) && (y < map.mapWidth) )
             {
                 // Check if the cell is not an obstacle
                 if( map.grid[x][y] == 0)
@@ -102,9 +104,8 @@ void search(Map map, Planner planner)
                     if((x == planner.goal[0]) && (y == planner.goal[1]))
                     {
                         // Print the final triplets value
-                        cout << (pc + planner.cost) << " " << x << " " << y << endl;
+                        cout << (open[k][0] + planner.cost) << " " << x << " " << y << endl;
                         g = 1;
-                        cout << g << endl;
                         break;
                     }
                     
@@ -115,11 +116,10 @@ void search(Map map, Planner planner)
                     else if (eg[x][y] == 0)
                     {
                         // Add cells to the Frontier
-                        open.push_back({pc + planner.cost, x, y});
+                        open.push_back({open[k][0] + planner.cost, x, y});
                         
                         // Set the cell as seen
                         eg[x][y] = 1;
-                        cout << eg[x][y] << endl;
                     }
                 }
             }
@@ -127,6 +127,7 @@ void search(Map map, Planner planner)
         
         // Count expansion steps
         n++;
+        // cout<< n << endl;
         
         // Check if reached goal
         if (g == 1)
@@ -143,6 +144,7 @@ void search(Map map, Planner planner)
         if (open.size() == 0)
         {
             cout << "Roadblock - Failed to reach the goal" << endl;
+            break; // Exit the while loop
         }
         
         // Iterate to the next cell since no roadblock
@@ -157,6 +159,7 @@ void search(Map map, Planner planner)
             }
         }
     } 
+    cout<< "No. of steps = " << n << endl;
 }
 
 int main()
@@ -164,9 +167,48 @@ int main()
     // Instantiate map and planner objects
     Map map;
     Planner planner;
-
+    
     // Search for the expansions
     search(map, planner);
-
+    
     return 0;
 }
+
+/*
+Output:
+0 0 0
+1 1 0
+2 2 0
+3 3 0
+4 4 0
+5 4 1
+6 4 2
+7 3 2
+8 2 2
+8 3 3
+9 1 2
+9 2 3
+9 3 4
+10 0 2
+10 1 3
+10 2 4
+10 3 5
+11 4 5
+No. of steps = 17 
+*/
+
+/* If grid changed to this:
+        { 0, 1, 0, 0, 0, 0 },
+        { 0, 1, 0, 0, 0, 0 },
+        { 0, 1, 0, 0, 0, 0 },
+        { 0, 1, 0, 0, 0, 0 },
+        { 0, 1, 0, 1, 1, 0 }
+then output:
+0 0 0
+1 1 0
+2 2 0
+3 3 0
+4 4 0
+Roadblock - Failed to reach the goal
+No. of steps = 5
+*/
