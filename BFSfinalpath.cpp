@@ -204,9 +204,6 @@ void search(Map map, Planner planner)
         // Define the movements arrow 2D grid
         vector<vector<string> > policy(map.mapHeight, vector<string>(map.mapWidth, "-"));
         
-        // Set the goal as asterick
-        policy[gc[1]][gc[2]] = "*";
-        
         // Set all the obstacles as vertical bars
         for (int i = 0; i < map.grid.size(); i++) 
         {
@@ -269,12 +266,24 @@ void search(Map map, Planner planner)
             }
             
             // Now that we have the next cell to go - set the movement arrow in the 2D grid
-            policy[xs][ys] = planner.movements_arrows[mv];
+            if (mv < planner.movements.size()/2){
+                policy[xs][ys] = planner.movements_arrows[mv+2];
+            }
+            else{
+                policy[xs][ys] = planner.movements_arrows[mv-2];
+            }
             
             // Set the next cell for next cycle
             xs = xm;
             ys = ym;
         }
+        
+        // Set the goal as asterick
+        policy[gc[1]][gc[2]] = "*";
+        
+        // Set the start as plus
+        policy[planner.start[0]][planner.start[1]] = "+";
+        
         print2DVector(policy);
     }
 }
@@ -304,3 +313,27 @@ int main()
          
     return 0;
 }
+
+/* 
+
+Output:
+11 4 5
+No. of steps = 17
+1    -1   14   -1   -1   -1   
+2    -1   11   15   -1   -1   
+3    -1   9    12   16   -1   
+4    -1   8    10   13   17   
+5    6    7    -1   -1   18   
++ | - - - - 
+v | - - - - 
+v | - - - - 
+v | ^ > > > 
+v > > | | * 
+Time taken by function: 146 microseconds
+*/
+/*
+Goal = * 
+Start = + 
+Obstacle = |
+Free = -
+*/
