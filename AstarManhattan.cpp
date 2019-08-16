@@ -96,7 +96,12 @@ void search(Map map, Planner planner)
     }
     
     // Set the starting point of the open vector - {f/fm/fe/fc, g, x, y}
-    open.push_back({mhv[planner.goal[0]][planner.goal[1]], 0, planner.start[0], planner.start[1]}); 
+    open.push_back({ehv[planner.goal[0]][planner.goal[1]], 0, planner.start[0], planner.start[1]});
+    
+    // Print the Manhattan distance Heuristic vector
+    cout << "Manhattan Heuristic Vector" << endl; 
+    print2DVector(mhv);
+    cout << endl;
     
     // Define the explored grid cell check vector
     vector<vector<int> > eg(map.mapHeight, vector<int>(map.mapWidth));
@@ -141,7 +146,9 @@ void search(Map map, Planner planner)
                     if((x == planner.goal[0]) && (y == planner.goal[1]))
                     {
                         // Print the final triplets value
+                        cout << "The final goal vector" << endl;
                         cout << (open[k][1] + planner.cost + mhv[x][y]) << " " << (open[k][1] + planner.cost) << " " << x << " " << y << endl;
+                        cout << endl;
                         g = 1;
                         
                         // Add goal co-ordinates to the open vector
@@ -208,9 +215,11 @@ void search(Map map, Planner planner)
         }
     } 
     cout << "No. of steps = " << n << endl;
+    cout << endl;
     // cout << "Size of open vector = " << open.size() << endl;
     
     // Print the 2D expansion vector
+    cout << "2D Expansion vector" << endl;
     for (int i = 0; i < eg.size(); ++i) {
         for (int j = 0; j < eg[i].size(); ++j) {
             if (eg[i][j] == 0){ // cells which are not seen and the obstacle cells
@@ -225,8 +234,10 @@ void search(Map map, Planner planner)
         }
         cout << endl;
     }
+    cout << endl;
     
     // Create the path only when the goal is found
+    cout<< "Shortest Path " << endl;
     if((open.size() != 0) && (g == 1))
     {
         // Get the goal co-ordinates
@@ -317,6 +328,7 @@ void search(Map map, Planner planner)
         policy[planner.start[0]][planner.start[1]] = "+";
         
         print2DVector(policy);
+        cout << endl;
     }
 }
 
@@ -345,7 +357,6 @@ int main()
          
     return 0;
 }
-
 
 /*
 Output:
