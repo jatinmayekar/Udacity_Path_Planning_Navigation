@@ -365,3 +365,36 @@ v | > > > v
 Time taken by function: 165 microseconds
 
 */
+
+/*
+Output:
+
+Manhattan Heuristic Vector
+9 8 7 6 5 4 
+8 7 6 5 4 3 
+7 6 5 4 3 2 
+6 5 4 3 2 1 
+5 4 3 2 1 0 
+
+The final goal vector
+11 11 4 5
+
+No. of steps = 15
+
+2D Expansion vector
+1    -1   -1   -1   -1   -1   
+2    -1   -1   -1   -1   -1   
+3    -1   9    11   14   -1   
+4    -1   8    10   13   15   
+5    6    7    -1   -1   16   
+
+Shortest Path 
++ | - - - - 
+v | - - - - 
+v | - - - - 
+v | > > > v 
+> > ^ | | * 
+
+Time taken by function: 191 microseconds
+
+*/
