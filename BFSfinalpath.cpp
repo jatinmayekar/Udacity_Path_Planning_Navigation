@@ -317,6 +317,9 @@ int main()
 /* 
 
 Output:
+
+Case I:
+
 11 4 5
 No. of steps = 17
 1    -1   14   -1   -1   -1   
@@ -330,7 +333,25 @@ v | - - - -
 v | ^ > > > 
 v > > | | * 
 Time taken by function: 146 microseconds
+
+Case II:
+
+13 0 5
+No. of steps = 22
+1    -1   14   18   22   23   
+2    -1   11   15   19   -1   
+3    -1   9    12   16   20   
+4    -1   8    10   13   17   
+5    6    7    -1   -1   21   
++ | ^ > > * 
+v | ^ - - - 
+v | ^ - - - 
+v | ^ - - - 
+v > > | | - 
+Time taken by function: 156 microseconds
+
 */
+
 /*
 Goal = * 
 Start = + 
