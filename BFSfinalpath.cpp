@@ -58,12 +58,6 @@ void search(Map map, Planner planner)
     //  Define the open vector
     vector<vector<int> > open;
     
-    // Define the 2D expansion vector
-    //vector<vector<int> > ev(mapHeight, vector<int> mapWidth);
-    
-    // Set the start point as 1
-    //eg[planner.start[0]][planner.start[1]] = 1;
-    
     // Set the starting point
     open.push_back({0, planner.start[0], planner.start[1]}); 
     
@@ -73,8 +67,7 @@ void search(Map map, Planner planner)
     //  Define the total path cost variable
     int pc = 0;
     
-    // Set the goal flag variable
-    // If path to goal exists, set it to 1
+    // Set the goal flag variable. If path to goal exists, set it to 1
     int g = 0; 
     
     // Define the no. of steps variable - while loop iteraion variable
@@ -268,10 +261,10 @@ void search(Map map, Planner planner)
             
             // Now that we have the next cell to go - set the movement arrow in the 2D grid
             if (mv < planner.movements.size()/2){
-                policy[xs][ys] = planner.movements_arrows[mv+2];
+                policy[xm][ym] = planner.movements_arrows[mv+2];
             }
             else{
-                policy[xs][ys] = planner.movements_arrows[mv-2];
+                policy[xm][ym] = planner.movements_arrows[mv-2];
             }
             
             // Set the next cell for next cycle
