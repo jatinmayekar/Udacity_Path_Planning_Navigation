@@ -22,10 +22,11 @@ public:
 };
 
 // Planner class
-class Planner : Map {
+class Planner : Map { // Inheritance
 public:
     int start[2] = { 0, 0 };
-    int goal[2] = { mapHeight - 1, mapWidth - 1 };
+    // Planner class can access the Map class variables and fucntions as it is inherited from it
+    int goal[2] = { mapHeight - 1, mapWidth - 1 }; 
     int cost = 1;
 
     string movements_arrows[4] = { "^", "<", "v", ">" };
