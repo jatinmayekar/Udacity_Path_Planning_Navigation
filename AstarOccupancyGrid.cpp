@@ -2,6 +2,7 @@
 #include <string.h>
 #include <vector>
 #include <algorithm>
+#include <fstream>
 #include <chrono>
 
 using namespace std;
@@ -13,7 +14,7 @@ public:
     const static int mapWidth = 150; 
     vector<vector<double> > map = GetMap();
     vector<vector<int> > grid = MaptoGrid();
-    vector<vector<int> > heuristic = GenerateHeuristic();
+    vector<vector<int> > h = GenerateHeuristic();
 
 private:
     // Read the file and get the map
@@ -37,15 +38,27 @@ private:
     vector<vector<int> > MaptoGrid()
     {
         vector<vector<int> > grid(mapHeight, vector<int>(mapWidth));
-        /* Here's how you interpret the data stored inside map
+        /* Interpret the data stored inside map
            0:unkown 
           <0:free 
           >0:occupied
         */
-        /* You need to convert these data to 0's and 1's and assigned it to grid where:
+        /* Convert these data to 0's and 1's and assigned it to grid where:
            0: Free Space
            1: Occupied + Unkown Space
         */
+        for (int i = 0; i < mapHeight; i++) {
+                for (int j = 0; j < mapWidth; j++) {
+                    if (map[i][j] < 0){ // Free
+                        grid[i][j] = 0;
+                    }
+                    else if (map[i][j] >= 0){ // Unknown + Occupied
+                        grid[i][j] = 1;
+                    }
+                    
+                }
+            }
+        
         return grid;
     }
 
@@ -53,11 +66,50 @@ private:
     vector<vector<int> > GenerateHeuristic()
     {
         int goal[2] = { 60, 50 };
-        vector<vector<int> > heuristic(mapHeight, vector<int>(mapWidth));
+        vector<vector<int> > mhv(mapHeight, vector<int>(mapWidth));
         // Generate a Manhattan heursitic vector
-        return heuristic;
+        // Set the goal as start point in all the heuristic fn
+        mhv[goal[0]][goal[1]] = 0;
+        
+        for (int i = 0; i < mhv.size(); i++){
+        for ( int j = 0; j < mhv[i].size(); j++){
+            mhv[i][j] = abs(i - goal[0]) + abs(j - goal[1]);
+        }
+    }
+    return mhv;
     }
 };
+
+// Planner class
+class Planner : Map {
+public:
+    int start[2] = {230, 145};
+    int goal[2] = {60, 50};
+    int cost = 1;
+
+    string movements_arrows[4] = { "^", "<", "v", ">" };
+
+    vector<vector<int> > movements{
+        { -1, 0 },
+        { 0, -1 },
+        { 1, 0 },
+        { 0, 1 }
+    };
+
+    vector<vector<int> > path;
+};
+
+// Printing vectors of any type
+template <typename T>
+void print2DVector(T Vec)
+{
+    for (int i = 0; i < Vec.size(); ++i) {
+        for (int j = 0; j < Vec[0].size(); ++j) {
+            cout << Vec[i][j] << ' ';
+        }
+        cout << endl;
+    }
+}
 
 /* Code the search function which will generate the expansion list */
 
@@ -66,7 +118,7 @@ void search(Map map, Planner planner)
     //  Define the open vector
     vector<vector<int> > open;
     
-    // Define the Manhattan Heuristic vector
+    /* Define the Manhattan Heuristic vector
     vector<vector<int> > mhv(map.mapHeight, vector<int> (map.mapWidth));
     
     // Define the Euclidean Heuristic vector
@@ -99,15 +151,15 @@ void search(Map map, Planner planner)
         for ( int j = 0; j < chv[i].size(); j++){
             chv[i][j] = max(abs(i - planner.goal[0]), abs(j - planner.goal[1]));
         }
-    }
+    }*/
     
     // Set the starting point of the open vector - {f/fm/fe/fc, g, x, y}
-    open.push_back({ehv[planner.goal[0]][planner.goal[1]], 0, planner.start[0], planner.start[1]});
+    open.push_back({map.h[planner.goal[0]][planner.goal[1]], 0, planner.start[0], planner.start[1]});
     
-    // Print the Manhattan distance Heuristic vector
+    /* Print the Manhattan distance Heuristic vector
     cout << "Manhattan Heuristic Vector" << endl; 
-    print2DVector(mhv);
-    cout << endl;
+    print2DVector(map.h);
+    cout << endl;*/
     
     // Define the explored grid cell check vector
     vector<vector<int> > eg(map.mapHeight, vector<int>(map.mapWidth));
@@ -151,14 +203,14 @@ void search(Map map, Planner planner)
                     // Check if the cell is the goal
                     if((x == planner.goal[0]) && (y == planner.goal[1]))
                     {
-                        // Print the final triplets value
+                        /* Print the final triplets value
                         cout << "The final goal vector" << endl;
-                        cout << (open[k][1] + planner.cost + mhv[x][y]) << " " << (open[k][1] + planner.cost) << " " << x << " " << y << endl;
-                        cout << endl;
+                        cout << (open[k][1] + planner.cost + map.h[x][y]) << " " << (open[k][1] + planner.cost) << " " << x << " " << y << endl;
+                        cout << endl;*/
                         g = 1;
                         
                         // Add goal co-ordinates to the open vector
-                        open.push_back({open[k][1] + planner.cost + mhv[x][y], open[k][1] + planner.cost, x, y});
+                        open.push_back({open[k][1] + planner.cost + map.h[x][y], open[k][1] + planner.cost, x, y});
                         
                         // Set the expansion vector
                         eg[x][y] = n + 2;
@@ -173,7 +225,7 @@ void search(Map map, Planner planner)
                     else if (eg[x][y] == 0)
                     {
                         // Add cells to the Frontier
-                        open.push_back({open[k][1] + planner.cost + mhv[x][y], open[k][1] + planner.cost, x, y});
+                        open.push_back({open[k][1] + planner.cost + map.h[x][y], open[k][1] + planner.cost, x, y});
                         
                         // Set the cell as seen
                         eg[x][y] = -1;
@@ -220,11 +272,11 @@ void search(Map map, Planner planner)
             }
         }
     } 
-    cout << "No. of steps = " << n << endl;
+    /*cout << "No. of steps = " << n << endl;
     cout << endl;
-    // cout << "Size of open vector = " << open.size() << endl;
+    // cout << "Size of open vector = " << open.size() << endl;*/
     
-    // Print the 2D expansion vector
+    /* Print the 2D expansion vector
     cout << "2D Expansion vector" << endl;
     for (int i = 0; i < eg.size(); ++i) {
         for (int j = 0; j < eg[i].size(); ++j) {
@@ -240,10 +292,10 @@ void search(Map map, Planner planner)
         }
         cout << endl;
     }
-    cout << endl;
+    cout << endl;*/
     
     // Create the path only when the goal is found
-    cout<< "Shortest Path " << endl;
+    //cout<< "Shortest Path " << endl;
     if((open.size() != 0) && (g == 1))
     {
         // Get the goal co-ordinates
@@ -253,7 +305,7 @@ void search(Map map, Planner planner)
         // Define the movements arrow 2D grid
         vector<vector<string> > policy(map.mapHeight, vector<string>(map.mapWidth, "-"));
         
-        // Set all the obstacles as vertical bars
+        /* Set all the obstacles as vertical bars
         for (int i = 0; i < map.grid.size(); i++) 
         {
             for (int j = 0; j < map.grid[i].size(); j++) 
@@ -263,7 +315,7 @@ void search(Map map, Planner planner)
                     policy[i][j] = "|";
                 }
             }
-        }
+        }*/
         
         // Define the starting point for the path - which is the goal here as we will go backwards
         int xs = gc[2];
@@ -358,9 +410,8 @@ int main()
     // use duration cast method 
     auto duration = duration_cast<microseconds>(stop - start); 
   
-    cout << "Time taken by function: "
-         << duration.count() << " microseconds" << endl; 
+    //cout << "Time taken by function: "
+    //    << duration.count() << " microseconds" << endl; 
          
     return 0;
 }
-
