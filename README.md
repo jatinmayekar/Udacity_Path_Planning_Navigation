@@ -139,4 +139,24 @@
       * Manhattan distance = | x<sub>d</sub> | + | y<sub>d</sub> |
       * Euclidean distance = sqrt ( ( x<sub>d</sub><sup>2</sup> ) + ( y<sub>d</sub><sup>2</sup> ) )
       * Chebyshev distance  = max ( | x<sub>d</sub> |, | y<sub>d</sub> | ) 
+      
+## Sample-Based & Probabilistic Path Planning    
+
+### Overview
+
+* For 3D space or robotts with 6DOF, path planning using the above mentioned algorithms can be done but the efficiency of these algo's become more critical
+* Performing complete discretization of the entire space and applying a graph search algorithm maybe too costly
+* To tackle path planning problems of larger size and greater dimension - use sample based - algo randomly sample the complete space hoping the collection of samples will adequately represent the configuration space 
+
+### Why Sample-Based planning
+
+* Increased Dimensions
+  * For a 2-dimensional 8-connected space, every node has 8 successors (8-connected means that from every cell you can move laterally or diagonally). Imagine a 3-dimensional 8-connected space, how many successors would every node have? 26. As the dimension of the C-space grows, the number of successors that every cell has increases substantially. In fact, for an n-dimensional space, it is equal to 3^n - 1 
+* Constrained Dynamics
+ * Aside from robots with many degrees of freedom and multi-robot systems, another computational difficulty involves working with robots that have constrained dynamics. For instance, a car is limited in its motion - it can move forward and backward, and it can turn with a limited turning radius
+ 
+* Categories of robotic systems
+  - Holonomic systems can be defined as systems where every constraint depends exclusively on the current pose and time, and not on any derivatives with respect to time. 
+  - Nonholonomic systems, on the other hand, are dependent on derivatives. Path planning for nonholonomic systems is more difficult due to the added constraints.
+
 
