@@ -157,6 +157,73 @@
  
 * Categories of robotic systems
   - Holonomic systems can be defined as systems where every constraint depends exclusively on the current pose and time, and not on any derivatives with respect to time. 
-  - Nonholonomic systems, on the other hand, are dependent on derivatives. Path planning for nonholonomic systems is more difficult due to the added constraints.
-
+  - Nonholonomic systems, on the other hand, are dependent on derivatives. Path planning for nonholonomic systems is more difficult due to the added constraints
+  
+ ### Weaking Requirements
+ 
+ * Combinatorial path planning are too inefficient to apply in high-dimensional environments, therefore compromise - weaken the requirements - complete and optimal
+ * Instead of aiming for the algo to be complete, aim for it to be probablistically complete
+ * *Probabilistically complete* = Probability of finding a path, if one exists increases to 1 as time goes to infinity
+ * Requirement of optimal path to a feasible path
+ * *Feasible path* = A path that obeys all the environmental and robot constraints such as obstacle and motion constraints
+ * Finding a feasible path proves that a path from start to goal exists, and if needed, the path can be optimized locally to improve performance
+ 
+ ### Sample-Based Planning
+ 
+ * Unlike the combinatorial path planning, does not discretize the configuration space but rather samples it randomly(or semi-randmonly) to build up a representation of the space - resultant graph is not precise but much quicker because of the relatively small no of samples used 
+ * Such a method is probabilistic beavuse as time passes, the no of samples reaches infintiy and the probability of finding a path, if it exists, approaches 1
+ * Effective for high-dimensional space - but also not suitable for some places where the no of samples required is more than the rest and so it might fail at such problems
+ * Two methods:
+     * Probabilistic Roadmap
+     * Rapidly Exploring Random Tree
+     
+ ### Probabilistic Roadmap (PRM)
+ 
+ * Randomly samples the free space, building up the graph to represent the free space - without needing to construc the C space or discretize it
+ * It does so by a collison check function - to check whether a randomly generated node lies in free space or is in collision with an obstacle
+ * Two Phases:
+    * Learning Phase
+        * Process of building up a graph
+        * Sampling random config and adding them to the graph
+        * It does so by generating a new random config represented by a node in the graph and checking to see it its a collision 
+        * If not the PR will try to connect it to neigbhours - two ways
+            * PRM looks for any no of neigbhours within a certain radius of the node
+            * Look for the node's K nearest neigbhours
+         * Once the neigbhour has been selected - PRM will try to successfully create an edge to each of its neigbhours
+         * The edges that collide with the obstacle are removed - to indentify this two ways - local planner must find a path between two nodes or return that such a path does not exists - has to be done quickly - so easy way - create a straight line between the nodes - place a no of evenly spaced samples - see whether any one of them is in a collision - 
+            * incrementally work from one side to other side
+            * binary approach - check midpoint - if not break the line into segments - try their midpoints for collision
+            * If all samples return no collision, then the edge can be added to the graph
+      * Eventually a certain criteria is met such as specific no of nodes or edges or a particular amt of time has elapsed - learning phase over 
+      
+    * Query Phase
+        * Uses the resulting graph to find a path from start to goal
+        * Connect the start and goal to the graph
+        * PRM does so by looking for nodes closest to the start and goal and using local planner to build a connection
+        * If this is successful - like A* applied - path may not be optimal but feasible
+        
+     * Parameters
+        * No of iterations  
+          * Conrols between how detailed the resultant graph is and how long the computation takes
+          * Additional computation is not required in wide open spaces as additional detail is unlikely to improve the resultant path
+          * Additional computation is required for complicated environments with narrow passages between obstacles
+          * Beware, insufficient no of iterations can result in a 'path not found' if the samples inadequately reppresent the space
+        * How to find neigbhours
+           * One option - look for k-nearest neigbhors to a node
+           * Efficient way - k-d tree can be utilized -  to break up the space into 'bins' with nodes - search the bins for the nearest node
+           * Other way - search for any nodes within a certain distance of the goal
+           * Ultimately, knowledge of the environment and the solution requirements will drive this decision-making process
+        * Local Planner
+           * Choice needs to be made by robotics engineer
+           * For most scenarios, the process of checking the edge for collision is repeated many times and efficiency is te key - but more powerful planners may be required in certain problems
+           
+     * ![A Comparative Study of Probabilistic Roadmap Planners](http://www.staff.science.uu.nl/~gerae101/pdf/compare.pdf)
+     
+     * The Learning Phase takes significantly longer to implement than the Query Phase, which only has to connect the start and goal nodes, and then search for a path. However, the graph created by the Learning Phase can be reused for many subsequent queries. For this reason, PRM is called a multi-query planner.
+     
+     * This is very beneficial in static or mildly-changing environments. However, some environments change so quickly that PRM’s multi-query property cannot be exploited. In such situations, PRM’s additional detail and computational slow nature is not appreciated. A quicker algorithm would be preferred - one that doesn’t spend time going in all directions without influence by the start and goal.
+     
+          
+        
+           
 
