@@ -132,4 +132,11 @@
    * While A* is a much more efficient search in most situations, there will be environments where it will not outperform other search algorithms. This happens if the path to the goal happens to go in the opposite direction first.
    * Variants of A* search exist - some accommodate the use of A* search in dynamic environments, while others help A* become more manageable in large environments
    * [Path Finding Visualization](https://qiao.github.io/PathFinding.js/visual/)
+   
+   * Types of Heuristic vector:
+      * x<sub>d</sub> =  x<sub>goal</sub> - x<sub>cellposition</sub>   
+      * y<sub>d</sub> =  y<sub>goal</sub> - y<sub>cellposition</sub>
+      * Manhattan distance = | x<sub>d</sub> | + | y<sub>d</sub> |
+      * Euclidean distance = sqrt ( ( x<sub>d</sub><sup>2</sup> ) + ( y<sub>d</sub><sup>2</sup> ) )
+      * Chebyshev distance  = max ( | x<sub>d</sub> |, | y<sub>d</sub> | ) 
 
