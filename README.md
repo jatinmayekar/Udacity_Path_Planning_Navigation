@@ -210,7 +210,7 @@
           * Beware, insufficient no of iterations can result in a 'path not found' if the samples inadequately reppresent the space
         * How to find neigbhours
            * One option - look for k-nearest neigbhors to a node
-           * Efficient way - k-d tree can be utilized -  to break up the space into 'bins' with nodes - search the bins for the nearest node
+           * Efficient way - ![k-d] tree(https://xlinux.nist.gov/dads/HTML/kdtree.html) can be utilized -  to break up the space into 'bins' with nodes - search the bins for the nearest node
            * Other way - search for any nodes within a certain distance of the goal
            * Ultimately, knowledge of the environment and the solution requirements will drive this decision-making process
         * Local Planner
@@ -222,6 +222,49 @@
      * The Learning Phase takes significantly longer to implement than the Query Phase, which only has to connect the start and goal nodes, and then search for a path. However, the graph created by the Learning Phase can be reused for many subsequent queries. For this reason, PRM is called a multi-query planner.
      
      * This is very beneficial in static or mildly-changing environments. However, some environments change so quickly that PRM’s multi-query property cannot be exploited. In such situations, PRM’s additional detail and computational slow nature is not appreciated. A quicker algorithm would be preferred - one that doesn’t spend time going in all directions without influence by the start and goal.
+     
+     * Psuedocode:
+        * `Initialize an empty graph`
+        *  `For n iterations:`
+        *       `Generate a random configuration`
+        *       `If the configuration is collision free:`
+        *             `Add the  configuration to the graph`
+        *             `Find the k nearest neighbours of the configuration`
+        *             `For each of the k neighbours:`
+        *                  `Try to find a collision-free path between`
+        *                     `the neighbour and original configuration`
+        *                     `If edge is collision-free:`
+        *                         `Add it to the graph`
+               
+   ### Rapidly Exploring Random Tree   
+   
+   *  Psuedocode:
+      * `Initialize two empty trees` // One from the start and one from the goal
+      * `Add start node to trees #1`
+      * `Add goal node to trees #2`
+      * `For n iterations,or until an edge connects trees #1 or #2:`
+      *     `Generate a random configuration (alternating trees)`
+      *      `If the configuration is collision free:`
+      *           `Find the closest neighbur on the tree to the configuration`
+      *           `If the configuration is less than the distance delta away from the neighbour:`
+      *                 `Try to connect the two with a local planner`
+      *            `Else:`
+      *                  `Replace the randomly generated configuration`
+      *                  `with a new configuration that falls along the same path` but a distance delts from the neighbour
+      *                   `Try to connect the two with a local planner`
+      *       `If node is added successfully:`
+      *             `Try to connect the new node to the closest neighbour`
+   *  Parameters
+       *  Sampling method
+          - Sample uniformly -favor unexplored areas
+          - Sample with a bias - cause search to advance greedily towards goal - greediness can be beneficial in simple planning problems - common methods - but sometimes can cause the robot to get stuck in a local minima
+       *  Delta
+          - 
+         
+               
+               
+       
+       
      
           
         
