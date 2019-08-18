@@ -240,7 +240,7 @@
    
    *  Psuedocode:
       * `Initialize two empty trees` // One from the start and one from the goal
-      * `Add start node to trees #1`
+      * `Add start node to trees #1` // This a variation where two trees are grown from start and goal node and tried to connect
       * `Add goal node to trees #2`
       * `For n iterations,or until an edge connects trees #1 or #2:`
       *     `Generate a random configuration (alternating trees)`
@@ -248,7 +248,7 @@
       *           `Find the closest neighbur on the tree to the configuration`
       *           `If the configuration is less than the distance delta away from the neighbour:`
       *                 `Try to connect the two with a local planner`
-      *            `Else:`
+      *            `Else:` // So farther the node, more likely to be in collision with an obstacle so create a node in between
       *                  `Replace the randomly generated configuration`
       *                  `with a new configuration that falls along the same path` but a distance delts from the neighbour
       *                   `Try to connect the two with a local planner`
@@ -259,7 +259,37 @@
           - Sample uniformly -favor unexplored areas
           - Sample with a bias - cause search to advance greedily towards goal - greediness can be beneficial in simple planning problems - common methods - but sometimes can cause the robot to get stuck in a local minima
        *  Delta
-          - 
+          - RRT will dictate the direction of growth
+          - Delta is the growth rate
+          - Small delta - large density of nodes - small growth rate
+          - Large delta - lost detail - more nodes unable to connect due to greater chances of collisions with obstacles 
+          - Choose carefully with knowledge of environment and requirement of solution
+    * Single query planner
+        * Explores the space starting with the start and the goal - therefore resultant graph cannot be applied to solve additional queries
+        * Builds a new graph for each query - much smaller but more directed graph with faster computation time
+    * RRT builds a tree, a type of graph where each node has only one parent 
+    * PRM builds a graph
+    * Very good for multidimensiional spaces
+    
+    * Advantages of RRT over PRM:
+      * RRT is much quicker than PRM - takes into account the start and end nodes and limits the growth area surrounding the existing graph instead of reaching out into all distant corners, the way PRM does
+      * RRT is more efficient than PRM at solving large path planning problems in dynamic environments
+      * RRT supports planning for non-holonomic systems, while PRM does not - because RRT method can take into consideration the additional constraints(such as a car’s turning radius at a particular speed) when adding nodes to a graph, the same way it already takes into consideration how far away the new node is from the existing tree
+      * RRT - Dynamic environments(changes quickly)
+      * PRM - Static environments     
+      
+### Path Smoothing
+  
+* Psuedo Code:
+   * `For n iterations`
+   * `Select the two nodes from the graph`
+   * `If the edge between the two nodes is shorter than the existing path between the nodes:`
+   *        `Use local planner to see if edge collision-free.`
+   *        `If collision-free:`
+   *               `Replace existing path with edge between the two nodes`
+    
+* Path Shortcutter algorithm - can optimize for path smoothness, expected energy use or any other measurable factor
+* After the Path Shortcutting algorithm is applied, the result is a more optimized path. It may still not be the optimal path, but it should have at the very least moved towards a local minimum. There exist more complex, informed algorithms that can improve the performance of the Path Shortcutter. These are able to use information about the workspace to better guide the algorithm to a more optimal solution.
          
                
                
