@@ -289,8 +289,97 @@
    *               `Replace existing path with edge between the two nodes`
     
 * Path Shortcutter algorithm - can optimize for path smoothness, expected energy use or any other measurable factor
-* After the Path Shortcutting algorithm is applied, the result is a more optimized path. It may still not be the optimal path, but it should have at the very least moved towards a local minimum. There exist more complex, informed algorithms that can improve the performance of the Path Shortcutter. These are able to use information about the workspace to better guide the algorithm to a more optimal solution.
-         
+* After the Path Shortcutting algorithm is applied, the result is a more optimized path. It may still not be the optimal path, but it should have at the very least moved towards a local minimum. There exist more complex, informed algorithms that can improve the performance of the Path Shortcutter. These are able to use information about the workspace to better guide the algorithm to a more optimal solution
+* To path plan in an environment such as the one presented above, alternate means of sampling can be introduced (such as Gaussian or Bridge sampling). Alternate methods bias their placement of samples to obstacle edges or vertices of the open space.
+* ![Path Planning for Non-Circular Micro Aerial Vehicles in Constrained Environments](https://www.cs.cmu.edu/~maxim/files/pathplanforMAV_icra13.pdf)
+* Anytime algorithm: an anytime algorithm is an algorithm that will return a solution even if it's computation is halted before it finishes searching the entire space. The longer the algorithm plans, the more optimal the solution will be.
+
+* RRT*: RRT* is a variant of RRT that tries to smooth the tree branches at every step. It does so by looking to see whether a child node can be swapped with it's parent (or it's parent's parent, etc) to produce a more direct path. The result is a less zig-zaggy and more optimal path.
+
+### Probabilistic Path Planning
+
+* No path planning algo uptil now has modeled/considered risk and uncertainty of robot motion
+* Need - Model the uncertainty the by considering a non-deterministic transition model - in some cases path execution is uncertain, an algorithm that takes the uncertainty into account explicitly is more likely to produce realistic paths - leads to Markov Decision processes
+* Non-deterministic model = One-step dynamics - Means action cannot guarantee to lead a robot from one state to another state. Instead, there is a probability associated with resulting in each state
+
+#### Markov Decision Process
+* A Markov Decision Process is defined by:
+   * A set of states *S*
+   * Initial state *s<sub>o<sub>*
+   * A set of actions *A*
+   * The transition model *T(s,a,s')* - Probability of reaching state *s'* from state *s* by executing action *a*
+   * A set of rewards *R*
+* The Markov assumption states that the probability of transitioning from state *s* to *s'* is only dependent on the present state *s* and not on the path taken to get to *s'* 
+ * One notable difference between MDPs in probabilistic path planning and MDPs in reinforcement learning, is that in path planning the robot is fully aware of all of the items listed above (state, actions, transition model, rewards). Whereas in RL, the robot was aware of its state and what actions it had available, but it was not aware of the rewards or the transition mode 
+ * Movement actions are non-deterministic
+ * Every action will have a probability less than 1 of being successfully executed. This can be due to a number of reasons such as wheel slip, internal errors, difficult terrain, etc
+ * In each state (cell), the robot will receive a certain reward, R(s)R(s). This reward could be positive or negative, but it cannot be infinite. It is common to provide the following rewards,
+
+      * small negative rewards to states that are not the goal state(s) - to represent the cost of time passing (a slow moving robot would incur a greater penalty than a speedy robot),
+      * large positive rewards for the goal state(s), and
+      * large negative rewards for hazardous states - in hopes of convincing the robot to avoid them.
+* These rewards will help guide the rover to a path that is efficient, but also safe - taking into account the uncertainty of the rover’s motion.
+* With the robot’s transition model identified and appropriate rewards assigned to all areas of the environment, we can now construct a policy.
+
+#### Policy
+
+* Solution to a Markov Decision Process is a policy - Denoted by pi
+* Policy is a mapping from states to actions
+* For every state, a policy will inform the robot of which action it should take
+* An optimal policy is denoted by pi* -  informs the robot of the best action to take from any state, to maximise the overall reward
+
+#### State Utility
+
+* Represents how attractive the state is wrt the goal
+* For each state, the state value function yields the expected return if the robot starts in that state and then follows the policy for all time steps
+* Mathematical Notation: U<sup>π</sup>(s) = E [∑<sup>∞</sup><sub>t=0</sub>R(s<sub>t</sub>)∣π,s<sub>0</sub>=s]
+* U<sup>π</sup>(s) represents the utility of a state *s*
+* E represents the expected value
+* R(s) represents the reward for state s
+* The utility of a state is the sum of the rewards that an agent would encounter if it started at that state and followed the policy to the goal
+* The expected reward for the first state is independent of the policy. While the expected reward of all future states (those between the state and the goal) depend on the policy.
+* Equation tranforms to : U<sup>π</sup>(s) = R<sub>t</sub> + U<sup>π</sup>(s')
+* Thus utiltiy of the state is an iterative process
+* Optimal Policy: π<sup>*</sup>(s) = argmax E[U<sup>π</sup>(s)]
+* In a state ss, the optimal policy \pi^*π 
+∗ In a state ss, the optimal policy \pi^*π 
+∗ In a state s, optimal policy will choose the action a that maximizes the utility of s (which, due to its iterative nature, maximizes the utilities of all future states too).
+
+#### Value Iteration Algorithm
+
+* Psuedo Code
+* U' = 0
+* loop until close enough (U,U')
+* U = U'
+* for s in S, do:
+*      U(s)=R(s)+γmax Σ s,a,s )U(s)
+* return U
+
+* With every iteration, the algorithm will have a more and more accurate estimate of each state’s utility. The number of iterations of the algorithm is dictated by a function \textit{close-enough}close-enough which detects convergence. One way to accomplish this is to evaluate the root mean square error,
+
+RMS = \frac{1}{|S|} \sqrt{\sum_{s}(U(s) - U'(s))^2}RMS= ∣
+1
+​	  
+s
+∑
+​	 (U(s)−U 
+′
+ (s)) 
+2
+ 
+​	 
+
+Once this error is below a predetermined threshold, the result has converged sufficiently.
+
+RMS(U,U') < \epsilonRMS(U,U 
+′
+ )<ϵ
+
+This algorithm finds the optimal policy to the MDP, regardless of what U'U 
+′
+  is initialized to (although the efficiency of the algorithm will be affected by a poor U'U 
+′
+ ).
                
                
        
